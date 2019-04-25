@@ -1,0 +1,42 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: k8s-hands-on-deploy
+  labels:
+    application: k8s-hands-on
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      application: k8s-hands-on
+  template:
+    metadata:
+      labels:
+        application: k8s-hands-on
+    spec:
+      containers:
+      - name: app
+        image: gcr.io/${PROJECT_ID}/k8s-hands-on:v1
+        ports:
+        - containerPort: 3000
+        args:
+        - bash
+        - -c
+        - go run main.go
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: k8s-hands-on-svc
+  labels:
+    application: k8s-hands-on
+spec:
+  type: LoadBalancer
+  ports:
+  - name: app
+    port: 80
+    targetPort: 8080
+  selector:
+    application: k8s-hands-on
